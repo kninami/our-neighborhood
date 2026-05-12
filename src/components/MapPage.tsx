@@ -49,10 +49,15 @@ const TABS: { id: Tab; label: string }[] = [
 
 type Props = { candidates: Candidate[] };
 
+const MIN_ZOOM = 0.7;
+const MAX_ZOOM = 2.5;
+const ZOOM_STEP = 0.3;
+
 export default function MapPage({ candidates }: Props) {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [modalCandidate, setModalCandidate] = useState<Candidate | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('candidates');
+  const [zoom, setZoom] = useState(1);
 
   const regionCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -77,11 +82,30 @@ export default function MapPage({ candidates }: Props) {
           className="lg:w-2/5 p-4 flex flex-col items-center lg:sticky lg:top-0 lg:self-start lg:min-h-screen shrink-0"
           style={{ backgroundColor: '#CFE8FC' }}
         >
-          <KoreaMap
-            selectedRegion={selectedRegion}
-            regionCounts={regionCounts}
-            onRegionSelect={setSelectedRegion}
-          />
+          <div className="relative w-full">
+            <KoreaMap
+              selectedRegion={selectedRegion}
+              regionCounts={regionCounts}
+              onRegionSelect={setSelectedRegion}
+              zoom={zoom}
+            />
+            <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
+              <button
+                onClick={() => setZoom(z => Math.min(+(z + ZOOM_STEP).toFixed(2), MAX_ZOOM))}
+                disabled={zoom >= MAX_ZOOM}
+                className="w-10 h-10 rounded-lg shadow-md font-bold text-xl flex items-center justify-center transition-colors disabled:opacity-30"
+                style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#475569' }}
+                aria-label="지도 확대"
+              >+</button>
+              <button
+                onClick={() => setZoom(z => Math.max(+(z - ZOOM_STEP).toFixed(2), MIN_ZOOM))}
+                disabled={zoom <= MIN_ZOOM}
+                className="w-10 h-10 rounded-lg shadow-md font-bold text-xl flex items-center justify-center transition-colors disabled:opacity-30"
+                style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#475569' }}
+                aria-label="지도 축소"
+              >−</button>
+            </div>
+          </div>
           <p className="text-center text-xs mt-2" style={{ color: '#6899b8' }}>
             지도에서 지역을 클릭하면 후보자 목록을 볼 수 있습니다
           </p>
