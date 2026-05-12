@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-traffic-red: #E85451;
+  --color-traffic-yellow: #FEF339;
+  --color-traffic-green: #69BE83;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --font-sans: var(--font-gothic-a1), 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
+
+@keyframes modal-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-card-in {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+.modal-backdrop { animation: modal-backdrop-in 0.15s ease-out forwards; }
+.modal-card     { animation: modal-card-in     0.18s ease-out forwards; }
+
+@keyframes title-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.title-rise         { opacity: 0; animation: title-rise 1s ease-out 0.1s forwards; }
+.title-rise-delayed { opacity: 0; animation: title-rise 1s ease-out 0.4s forwards; }
