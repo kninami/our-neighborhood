@@ -50,20 +50,20 @@ export default async function RootLayout({
           <div className="max-w-screen-xl mx-auto px-5">
             <div className="grid items-center grid-cols-[auto_1fr_auto]">
               {/* 햄버거: 항상 row1 col1 */}
-              <div className="py-3 flex items-center">
+              <div className="py-2 flex items-center">
                 <HamburgerMenu />
               </div>
 
               {/* 롤러: 모바일=row1 col2 중앙 / 데스크탑=row1 col3 우측 */}
-              <div className="py-3 row-start-1 col-start-2 md:col-start-3 flex items-center justify-center md:justify-end">
+              <div className="py-2 row-start-1 col-start-2 md:col-start-3 flex items-center justify-center md:justify-end">
                 <CandidateRoller candidates={rollingCandidates} />
               </div>
 
               {/* Spacer: 모바일 전용, 햄버거와 대칭 */}
-              <div className="py-3 md:hidden row-start-1 col-start-3 w-9" aria-hidden="true" />
+              <div className="py-2 md:hidden row-start-1 col-start-3 w-9" aria-hidden="true" />
 
               {/* 검색바: 모바일=row2 전체폭 / 데스크탑=row1 col2 중앙 */}
-              <div className="col-start-1 col-span-3 row-start-2 pb-3 md:col-start-2 md:col-span-1 md:row-start-1 md:py-3 md:pb-0 flex items-center justify-center">
+              <div className="col-start-1 col-span-3 row-start-2 pb-2 md:col-start-2 md:col-span-1 md:row-start-1 md:py-2 md:pb-0 flex items-center justify-center">
                 <SearchBar />
               </div>
             </div>
