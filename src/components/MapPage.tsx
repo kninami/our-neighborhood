@@ -120,11 +120,11 @@ export default function MapPage({ candidates }: Props) {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className="flex-1 py-3 text-sm font-semibold transition-colors relative"
-                style={{ color: activeTab === tab.id ? '#E26419' : '#94a3b8' }}
+                style={{ color: activeTab === tab.id ? '#111111' : '#94a3b8' }}
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E26419]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#111111]" />
                 )}
               </button>
             ))}

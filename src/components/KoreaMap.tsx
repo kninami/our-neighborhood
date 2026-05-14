@@ -69,13 +69,13 @@ export default function KoreaMap({
   }
 
   function getFill(id: string, isCity: boolean): string {
-    if (selectedRegion === id) return '#fde8d0';
+    if (selectedRegion === id) return '#e2e8f0';
     if (hoveredRegion === id) return '#e2e8f0';
     return isCity ? '#dde4ee' : '#eef1f7';
   }
 
   function getStroke(id: string): string {
-    if (selectedRegion === id) return '#E26419';
+    if (selectedRegion === id) return '#64748b';
     if (hoveredRegion === id) return '#64748b';
     return '#b0b8c8';
   }
@@ -140,7 +140,7 @@ export default function KoreaMap({
               dominantBaseline="middle"
               fontSize={isCity ? 8 : 11}
               fontWeight={isSelected || isHovered ? '700' : '500'}
-              fill={isSelected ? '#b04a10' : '#334155'}
+              fill="#334155"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
             >
               {shortName}
@@ -154,7 +154,7 @@ export default function KoreaMap({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={isCity ? 7 : 9}
-                fill={isSelected ? '#b04a10' : '#64748b'}
+                fill="#64748b"
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
               >
                 {count}명

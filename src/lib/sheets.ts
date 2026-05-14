@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { Candidate } from '@/types';
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID ?? '185gMY199wwD1tVWbBgsh9M1215JRaDu9PZNlgVR3Ipg';
@@ -13,7 +14,7 @@ function normalizeRegion(name: string): string {
   return REGION_ALIASES[name?.trim()] ?? name?.trim() ?? '';
 }
 
-export async function getCandidates(): Promise<Candidate[]> {
+export const getCandidates = cache(async function getCandidates(): Promise<Candidate[]> {
   const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=List&headers=1`;
 
   try {
@@ -42,4 +43,4 @@ export async function getCandidates(): Promise<Candidate[]> {
   } catch {
     return [];
   }
-}
+});
