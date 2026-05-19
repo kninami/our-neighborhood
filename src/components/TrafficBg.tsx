@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
 const PALETTE = [
   { fill: '#E85451', glow: 'rgba(232,84,81,0.7)' },
   { fill: '#FEF339', glow: 'rgba(254,243,57,0.7)' },
@@ -20,35 +18,40 @@ type Dot = {
   maxOpacity: number;
 };
 
+function pseudoRandom(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+function buildDots(count: number): Dot[] {
+  return Array.from({ length: count }, (_, index) => {
+    const colorIndex = Math.floor(pseudoRandom(index + 1) * PALETTE.length);
+    const color = PALETTE[colorIndex];
+
+    return {
+      id: index,
+      x: pseudoRandom(index + 11) * 100,
+      y: pseudoRandom(index + 21) * 100,
+      fill: color.fill,
+      glow: color.glow,
+      size: 3 + pseudoRandom(index + 31) * 5,
+      duration: 2 + pseudoRandom(index + 41) * 6,
+      delay: pseudoRandom(index + 51) * 12,
+      maxOpacity: 0.15 + pseudoRandom(index + 61) * 0.2,
+    };
+  });
+}
+
+const DOTS = buildDots(30);
+
 export default function TrafficBg() {
-  const [dots, setDots] = useState<Dot[]>([]);
-
-  useEffect(() => {
-    setDots(
-      Array.from({ length: 30 }, (_, i) => {
-        const c = PALETTE[Math.floor(Math.random() * 3)];
-        return {
-          id: i,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          fill: c.fill,
-          glow: c.glow,
-          size: 3 + Math.random() * 5,
-          duration: 2 + Math.random() * 6,
-          delay: Math.random() * 12,
-          maxOpacity: 0.15 + Math.random() * 0.2,
-        };
-      }),
-    );
-  }, []);
-
   return (
     <div
       className="fixed inset-0 pointer-events-none overflow-hidden"
       style={{ zIndex: 2 }}
       aria-hidden="true"
     >
-      {dots.map((dot) => (
+      {DOTS.map((dot) => (
         <span
           key={dot.id}
           style={{

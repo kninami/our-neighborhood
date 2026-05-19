@@ -18,12 +18,18 @@ export default function KoreaMap({
 }: Props) {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; startPanX: number; startPanY: number } | null>(null);
   const wasMovedRef = useRef(false);
 
   useEffect(() => {
-    if (zoom <= 1) setPan({ x: 0, y: 0 });
+    if (zoom > 1) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => setPan({ x: 0, y: 0 }));
+    return () => cancelAnimationFrame(frame);
   }, [zoom]);
 
   const z = zoom;
@@ -44,6 +50,7 @@ export default function KoreaMap({
       startPanY: pan.y,
     };
     wasMovedRef.current = false;
+    setIsDragging(true);
     (e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
   }
 
@@ -65,6 +72,7 @@ export default function KoreaMap({
 
   function handlePointerUp() {
     dragRef.current = null;
+    setIsDragging(false);
     setTimeout(() => { wasMovedRef.current = false; }, 0);
   }
 
@@ -93,7 +101,7 @@ export default function KoreaMap({
       className="w-full h-full"
       style={{
         display: 'block',
-        cursor: canPan ? (dragRef.current ? 'grabbing' : 'grab') : 'default',
+        cursor: canPan ? (isDragging ? 'grabbing' : 'grab') : 'default',
         touchAction: canPan ? 'none' : 'auto',
       }}
       aria-label="대한민국 지도"
@@ -117,7 +125,7 @@ export default function KoreaMap({
               if (wasMovedRef.current) return;
               onRegionSelect(isSelected ? null : id);
             }}
-            onMouseEnter={() => !dragRef.current && setHoveredRegion(id)}
+            onMouseEnter={() => !isDragging && setHoveredRegion(id)}
             onMouseLeave={() => setHoveredRegion(null)}
             style={{ cursor: canPan ? 'inherit' : 'pointer' }}
             role="button"
