@@ -1,8 +1,31 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { ReactNode } from 'react';
 import { useState, useEffect } from 'react';
 
-const MENU_ITEMS = [
+type BaseMenuItem = {
+  label: string;
+  icon: ReactNode;
+};
+
+type LinkMenuItem = BaseMenuItem & {
+  href: string;
+  children?: never;
+};
+
+type ParentMenuItem = BaseMenuItem & {
+  children: Array<{
+    label: string;
+    href: string;
+  }>;
+  href?: never;
+};
+
+type MenuItem = LinkMenuItem | ParentMenuItem;
+
+const MENU_ITEMS: MenuItem[] = [
   {
     label: '지역 현안 찾기',
     href: '#',
@@ -24,7 +47,12 @@ const MENU_ITEMS = [
   },
   {
     label: '사회대전환 연대회의 소개',
-    href: '#',
+    children: [
+      {
+        label: '공동선언문',
+        href: '/coalition/statement',
+      },
+    ],
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
@@ -35,6 +63,10 @@ const MENU_ITEMS = [
 
 export default function HamburgerMenu() {
   const [open, setOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    '사회대전환 연대회의 소개': true,
+  });
+  const pathname = usePathname();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
@@ -46,6 +78,17 @@ export default function HamburgerMenu() {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [open]);
+
+  function toggleSection(label: string) {
+    setExpandedSections((current) => ({
+      ...current,
+      [label]: !current[label],
+    }));
+  }
+
+  function isParentItem(item: MenuItem): item is ParentMenuItem {
+    return 'children' in item;
+  }
 
   return (
     <>
@@ -116,28 +159,82 @@ export default function HamburgerMenu() {
         {/* 메뉴 항목 */}
         <nav className="flex-1 py-3" aria-label="주요 메뉴">
           {MENU_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50 transition-colors group"
-              onClick={() => setOpen(false)}
-            >
-              <span className="text-slate-400 group-hover:text-slate-700 transition-colors shrink-0">
-                {item.icon}
-              </span>
-              <span
-                className="text-[0.9375rem] text-slate-700 group-hover:text-slate-900 transition-colors"
-                style={{ fontWeight: 500 }}
-              >
-                {item.label}
-              </span>
-              <svg
-                className="w-4 h-4 text-slate-300 group-hover:text-slate-400 ml-auto shrink-0 transition-colors"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
+            <div key={item.label}>
+              {isParentItem(item) ? (
+                <>
+                  <button
+                    type="button"
+                    className="group flex w-full items-center gap-3.5 px-6 py-4 text-left hover:bg-slate-50 transition-colors"
+                    onClick={() => toggleSection(item.label)}
+                    aria-expanded={expandedSections[item.label] ?? false}
+                  >
+                    <span className="text-slate-400 group-hover:text-slate-700 transition-colors shrink-0">
+                      {item.icon}
+                    </span>
+                    <span
+                      className="text-[0.9375rem] text-slate-700 group-hover:text-slate-900 transition-colors"
+                      style={{ fontWeight: 500 }}
+                    >
+                      {item.label}
+                    </span>
+                    <svg
+                      className={`ml-auto h-4 w-4 shrink-0 text-slate-300 transition-transform duration-200 group-hover:text-slate-400 ${
+                        expandedSections[item.label] ? 'rotate-90' : ''
+                      }`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {(expandedSections[item.label] ?? false) && (
+                    <div className="pb-2">
+                      {item.children.map((child) => {
+                        const isActive = pathname === child.href;
+
+                        return (
+                          <Link
+                            key={child.label}
+                            href={child.href}
+                            className="ml-14 flex items-center rounded-l-full px-4 py-2.5 text-sm transition-colors"
+                            style={{
+                              backgroundColor: isActive ? '#fff6bf' : 'transparent',
+                              color: isActive ? '#111111' : '#475569',
+                              fontWeight: isActive ? 700 : 500,
+                            }}
+                            onClick={() => setOpen(false)}
+                          >
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <a
+                  href={item.href}
+                  className="group flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50 transition-colors"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="text-slate-400 group-hover:text-slate-700 transition-colors shrink-0">
+                    {item.icon}
+                  </span>
+                  <span
+                    className="text-[0.9375rem] text-slate-700 group-hover:text-slate-900 transition-colors"
+                    style={{ fontWeight: 500 }}
+                  >
+                    {item.label}
+                  </span>
+                  <svg
+                    className="w-4 h-4 text-slate-300 group-hover:text-slate-400 ml-auto shrink-0 transition-colors"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              )}
+            </div>
           ))}
         </nav>
       </div>
