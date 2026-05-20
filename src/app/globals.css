@@ -131,3 +131,12 @@ body {
 }
 .keyword-in  { animation: keyword-in  0.38s ease-out forwards; }
 .keyword-out { animation: keyword-out 0.38s ease-in  forwards; }
+
+@keyframes share-tip-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+.share-tip-sway {
+  animation: share-tip-sway 1.9s ease-in-out infinite;
+  will-change: transform;
+}

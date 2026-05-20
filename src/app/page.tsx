@@ -4,14 +4,14 @@ import MapPage from '@/components/MapPage';
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string }>;
+  searchParams: Promise<{ region?: string; candidate?: string }>;
 }) {
   const [candidates, policies, agendas] = await Promise.all([
     getCandidates(),
     getPolicies(),
     getAgendas(),
   ]);
-  const { region } = await searchParams;
+  const { region, candidate } = await searchParams;
 
   return (
     <MapPage
@@ -19,6 +19,7 @@ export default async function Home({
       policies={policies}
       agendas={agendas}
       initialRegion={region?.trim() || null}
+      initialCandidateId={candidate?.trim() || null}
     />
   );
 }

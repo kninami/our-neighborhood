@@ -95,15 +95,6 @@ export default function CandidateDetailPanel({
 
       <div className={`grid gap-8 ${compact ? 'mt-6' : 'mt-8 lg:grid-cols-[1.08fr_0.92fr]'}`}>
         <div className="space-y-8">
-          <SectionCard title="핵심 정보" tone="#E85451">
-            <dl className="grid gap-4 sm:grid-cols-2">
-              <MetaItem label="광역자치단체" value={candidate.region} themeSoft={theme.sectionSoft} />
-              <MetaItem label="출마 유형" value={candidate.candidateType} themeSoft={theme.sectionSoft} />
-              <MetaItem label="지역구" value={candidate.district} themeSoft={theme.sectionSoft} />
-              <MetaItem label="정당" value={candidate.party} themeSoft={theme.sectionSoft} />
-            </dl>
-          </SectionCard>
-
           <SectionCard title="주요 공약" tone="#FEF339">
             {candidate.pledges.length > 0 ? (
               <ol className="grid gap-3">
@@ -291,28 +282,6 @@ function InfoCard({
         <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">{label}</p>
       </div>
       <p className="text-sm font-medium leading-6 text-slate-700">{children}</p>
-    </div>
-  );
-}
-
-function MetaItem({
-  label,
-  value,
-  themeSoft,
-}: {
-  label: string;
-  value: string;
-  themeSoft: string;
-}) {
-  return (
-    <div
-      className="rounded-[1.25rem] border border-slate-200 px-4 py-4"
-      style={{ backgroundColor: themeSoft }}
-    >
-      <dt className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">{label}</dt>
-      <dd className="mt-2 text-sm font-medium leading-6 text-slate-800">
-        {value || '—'}
-      </dd>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import CandidateDetailPanel from './CandidateDetailPanel';
+import CandidateShareButton from './CandidateShareButton';
 import KoreaMap from './KoreaMap';
 import { getPartyColor } from '@/lib/partyColors';
 import type { Candidate, CandidatePolicy, RegionalAgenda } from '@/types';
@@ -29,6 +30,7 @@ type Props = {
   policies: CandidatePolicy[];
   agendas: RegionalAgenda[];
   initialRegion?: string | null;
+  initialCandidateId?: string | null;
 };
 
 const TABS: { id: Tab; label: string }[] = [
@@ -65,11 +67,17 @@ export default function MapPage({
   policies,
   agendas,
   initialRegion = null,
+  initialCandidateId = null,
 }: Props) {
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(initialRegion);
+  const initialCandidate = initialCandidateId
+    ? candidates.find((candidate) => candidate.id === initialCandidateId) ?? null
+    : null;
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(
+    initialCandidate?.region || initialRegion,
+  );
   const [activeTab, setActiveTab] = useState<Tab>('candidates');
   const [zoom, setZoom] = useState(1);
-  const [modalCandidate, setModalCandidate] = useState<Candidate | null>(null);
+  const [modalCandidate, setModalCandidate] = useState<Candidate | null>(initialCandidate);
 
   const regionCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -93,6 +101,36 @@ export default function MapPage({
   );
 
   const grouped = useMemo(() => groupByType(regionCandidates), [regionCandidates]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nextRegion = modalCandidate?.region || selectedRegion;
+
+    if (nextRegion) {
+      params.set('region', nextRegion);
+    } else {
+      params.delete('region');
+    }
+
+    if (modalCandidate) {
+      params.set('candidate', modalCandidate.id);
+    } else {
+      params.delete('candidate');
+    }
+
+    const nextSearch = params.toString();
+    const nextUrl = nextSearch ? `${window.location.pathname}?${nextSearch}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState(window.history.state, '', nextUrl);
+    }
+  }, [modalCandidate, selectedRegion]);
+
+  const handleCandidateSelect = (candidate: Candidate) => {
+    setSelectedRegion(candidate.region || null);
+    setModalCandidate(candidate);
+  };
 
   return (
     <>
@@ -162,7 +200,7 @@ export default function MapPage({
                   region={selectedRegion}
                   grouped={grouped}
                   total={regionCandidates.length}
-                  onSelect={setModalCandidate}
+                  onSelect={handleCandidateSelect}
                 />
               )
             )}
@@ -354,6 +392,17 @@ function CandidateModal({
     };
   }, []);
 
+  const shareParams = new URLSearchParams({
+    candidate: candidate.id,
+  });
+
+  if (candidate.region) {
+    shareParams.set('region', candidate.region);
+  }
+
+  const sharePath = `/?${shareParams.toString()}`;
+  const audienceLabel = getAudienceLabel(candidate);
+
   return (
     <div
       className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5"
@@ -367,15 +416,23 @@ function CandidateModal({
         aria-modal="true"
         aria-labelledby="candidate-modal-title"
       >
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 z-20 rounded-full bg-white/90 p-2 text-slate-500 shadow-sm transition-colors hover:text-slate-700"
-          aria-label="닫기"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+          <CandidateShareButton
+            candidateName={candidate.name}
+            audienceLabel={audienceLabel}
+            sharePath={sharePath}
+          />
+
+          <button
+            onClick={onClose}
+            className="rounded-full bg-white/92 p-2 text-slate-500 shadow-sm transition-colors hover:text-slate-700"
+            aria-label="닫기"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
         <div className="max-h-[92vh] overflow-y-auto p-3 sm:p-5">
           <div id="candidate-modal-title" className="sr-only">
@@ -391,4 +448,21 @@ function CandidateModal({
       </div>
     </div>
   );
+}
+
+function getAudienceLabel(candidate: Candidate): string {
+  const source = candidate.district.trim() || candidate.region.trim();
+
+  if (!source) {
+    return '이 지역';
+  }
+
+  const withoutElectionDistrict = source
+    .replace(/\s*제\s*\d+\s*선거구/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const firstChunk = withoutElectionDistrict.split(/[·,(]/)[0]?.trim() || withoutElectionDistrict;
+  const softened = firstChunk.replace(/(특별자치도|특별자치시|특별시|광역시|도|시|군)$/u, '').trim();
+
+  return softened || firstChunk || source;
 }
