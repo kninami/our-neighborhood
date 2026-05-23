@@ -119,7 +119,7 @@ export default function CandidateRoller({ candidates }: Props) {
       <button
         type="button"
         onClick={() => handleClick(current)}
-        className="relative overflow-hidden w-[200px] md:w-[240px] text-left rounded-md hover:bg-zinc-100 transition-colors px-1"
+        className="relative overflow-hidden w-[200px] md:w-[240px] cursor-pointer text-left rounded-md hover:bg-zinc-100 transition-colors px-1"
         style={{ height: '1.5em' }}
         aria-label={`${current.name} 후보 정보 보기`}
       >

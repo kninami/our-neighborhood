@@ -365,7 +365,7 @@ function CandidateCard({
   return (
     <button
       onClick={onClick}
-      className="group flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white text-left transition-all hover:border-zinc-300 hover:shadow-md"
+      className="group flex w-full cursor-pointer flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white text-left transition-all hover:border-zinc-300 hover:shadow-md"
     >
       {/* 당색 탑 스트립 */}
       <div className="h-[5px] w-full shrink-0" style={{ backgroundColor: color.bg }} />
@@ -478,7 +478,7 @@ function CandidateModal({
 
           <button
             onClick={onClose}
-            className="rounded-lg bg-white border border-zinc-200 p-2 text-zinc-500 transition-colors hover:text-zinc-800 hover:border-zinc-300"
+            className="cursor-pointer rounded-lg bg-white border border-zinc-200 p-2 text-zinc-500 transition-colors hover:text-zinc-800 hover:border-zinc-300"
             aria-label="닫기"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -493,7 +493,6 @@ function CandidateModal({
           </div>
           <CandidateDetailPanel
             candidate={candidate}
-            policies={policies}
             agendas={agendas}
             compact
           />

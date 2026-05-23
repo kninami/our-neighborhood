@@ -85,7 +85,7 @@ export default function CandidateShareButton({
       <button
         type="button"
         onClick={handleShare}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/92 text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.14)] transition-transform hover:-translate-y-0.5 hover:text-slate-900"
+        className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/92 text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.14)] transition-transform hover:-translate-y-0.5 hover:text-slate-900"
         aria-label={buttonLabel}
         title={buttonLabel}
       >

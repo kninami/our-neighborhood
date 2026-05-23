@@ -1,26 +1,21 @@
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { getPartyColor, getPartyTheme } from '@/lib/partyColors';
-import type { Candidate, CandidatePolicy, RegionalAgenda } from '@/types';
+import type { Candidate, RegionalAgenda } from '@/types';
 
 type Props = {
   candidate: Candidate;
-  policies: CandidatePolicy[];
   agendas: RegionalAgenda[];
   compact?: boolean;
 };
 
 export default function CandidateDetailPanel({
   candidate,
-  policies,
   agendas,
   compact = false,
 }: Props) {
   const color = getPartyColor(candidate.party);
   const theme = getPartyTheme(candidate.party);
-  const relatedPolicies = policies.filter(
-    (policy) => policy.region === candidate.region && policy.candidateName === candidate.name,
-  );
   const relatedAgendas = agendas.filter((agenda) => agenda.region === candidate.region);
   const links = [
     { label: '홈페이지', url: candidate.websiteUrl, tone: '#E73A36' },
@@ -113,13 +108,6 @@ export default function CandidateDetailPanel({
             )}
           </SectionCard>
 
-          <SectionCard title="정책 시트 추가 정보" tone="#50B62A">
-            {relatedPolicies.length > 0 ? (
-              <PolicyList policies={relatedPolicies} themeSoft={theme.sectionSoft} />
-            ) : (
-              <EmptySection message="정책 시트에 연결된 추가 설명이 아직 없습니다." themeSoft={theme.sectionSoft} />
-            )}
-          </SectionCard>
         </div>
 
         <div className="space-y-5">
@@ -174,13 +162,11 @@ export default function CandidateDetailPanel({
             )}
           </SectionCard>
 
-          <SectionCard title="지역 현안과 의제" tone="#FFED00">
-            {relatedAgendas.length > 0 ? (
+          {relatedAgendas.length > 0 && (
+            <SectionCard title="지역 현안과 의제" tone="#FFED00">
               <AgendaList agendas={relatedAgendas} theme={theme} />
-            ) : (
-              <EmptySection message="현안과 의제 시트에 등록된 내용이 아직 없습니다." themeSoft={theme.sectionSoft} />
-            )}
-          </SectionCard>
+            </SectionCard>
+          )}
         </div>
       </div>
     </div>
@@ -278,30 +264,6 @@ function InfoCard({
   );
 }
 
-function PolicyList({
-  policies,
-  themeSoft,
-}: {
-  policies: CandidatePolicy[];
-  themeSoft: string;
-}) {
-  return (
-    <ul className="grid gap-2">
-      {policies.map((policy, index) => (
-        <li
-          key={`${policy.candidateName}-${policy.title}-${index}`}
-          className="rounded-lg border border-zinc-200 px-4 py-3.5"
-          style={{ backgroundColor: themeSoft }}
-        >
-          <p className="text-base font-bold text-zinc-900">{policy.title || '제목 미정'}</p>
-          {policy.content && (
-            <p className="mt-1.5 text-base leading-8 text-zinc-600">{policy.content}</p>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 function AgendaList({
   agendas,

@@ -53,7 +53,6 @@ export default async function CandidatePage({
 
       <CandidateDetailPanel
         candidate={candidate}
-        policies={policies}
         agendas={agendas}
       />
     </div>
