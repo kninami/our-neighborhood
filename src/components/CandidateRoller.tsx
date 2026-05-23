@@ -5,9 +5,9 @@ import type { Candidate } from '@/types';
 import { getPartyColor } from '@/lib/partyColors';
 
 const LIGHTS = [
-  { color: '#E85451', glow: 'rgba(232,84,81,0.75)',  delay: '0s'   },
-  { color: '#FEF339', glow: 'rgba(254,243,57,0.75)', delay: '0.8s' },
-  { color: '#69BE83', glow: 'rgba(105,190,131,0.75)',delay: '1.6s' },
+  { color: '#E73A36', glow: 'rgba(232,84,81,0.75)',  delay: '0s'   },
+  { color: '#FFED00', glow: 'rgba(254,243,57,0.75)', delay: '0.8s' },
+  { color: '#50B62A', glow: 'rgba(105,190,131,0.75)',delay: '1.6s' },
 ];
 
 const INTERVAL      = 3200;

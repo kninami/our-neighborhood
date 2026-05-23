@@ -173,9 +173,9 @@ export default function KoreaMap({
       })}
 
       {/* Traffic light signature dots */}
-      <circle cx="462" cy="458" r="3.5" fill="#E85451" opacity="0.85" />
-      <circle cx="469" cy="458" r="3.5" fill="#FEF339" opacity="0.85" />
-      <circle cx="476" cy="458" r="3.5" fill="#69BE83" opacity="0.85" />
+      <circle cx="462" cy="458" r="3.5" fill="#E73A36" opacity="0.85" />
+      <circle cx="469" cy="458" r="3.5" fill="#FFED00" opacity="0.85" />
+      <circle cx="476" cy="458" r="3.5" fill="#50B62A" opacity="0.85" />
     </svg>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
 const PALETTE = [
-  { fill: '#E85451', glow: 'rgba(232,84,81,0.7)' },
-  { fill: '#FEF339', glow: 'rgba(254,243,57,0.7)' },
-  { fill: '#69BE83', glow: 'rgba(105,190,131,0.7)' },
+  { fill: '#E73A36', glow: 'rgba(232,84,81,0.7)' },
+  { fill: '#FFED00', glow: 'rgba(254,243,57,0.7)' },
+  { fill: '#50B62A', glow: 'rgba(105,190,131,0.7)' },
 ];
 
 type Dot = {

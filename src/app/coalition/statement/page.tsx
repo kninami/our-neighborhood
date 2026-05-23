@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 function parseStatement(content: string) {
-  const normalized = content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
+  const normalized = content.replace(/^﻿/, '').replace(/\r\n/g, '\n').trim();
   const blocks = normalized
     .split(/\n{2,}/)
     .map((block) => block.trim())
@@ -36,44 +36,44 @@ export default async function CoalitionStatementPage() {
   const statement = parseStatement(raw);
 
   return (
-    <div className="bg-[linear-gradient(180deg,#fff8da_0%,#ffffff_30%,#f4fbf6_100%)]">
-      <div className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-        <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="h-2 w-full bg-[linear-gradient(90deg,#E85451_0%,#FEF339_50%,#69BE83_100%)]" />
+    <div className="bg-zinc-50">
+      <div className="mx-auto max-w-3xl px-5 py-10 sm:py-14">
+        <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+          <div className="h-[3px] w-full bg-[linear-gradient(90deg,#E73A36_0%,#FFED00_50%,#50B62A_100%)]" />
 
-          <div className="px-6 py-8 sm:px-10 sm:py-12">
-            <div className="mb-8 flex items-center gap-2">
-              {(['#E85451', '#FEF339', '#69BE83'] as const).map((color) => (
+          <div className="px-6 py-8 sm:px-9 sm:py-10">
+            <div className="mb-7 flex items-center gap-2">
+              {(['#E73A36', '#FFED00', '#50B62A'] as const).map((color) => (
                 <span
                   key={color}
-                  className="inline-flex h-3.5 w-3.5 rounded-full"
+                  className="inline-flex h-3 w-3 rounded-sm"
                   style={{ backgroundColor: color }}
                 />
               ))}
             </div>
 
             {statement.eyebrow && (
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-500">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-zinc-400">
                 {statement.eyebrow}
               </p>
             )}
 
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-zinc-900 sm:text-4xl">
               {statement.title}
             </h1>
 
             {statement.subtitle && (
-              <p className="mt-5 text-lg font-semibold text-slate-700 sm:text-2xl">
+              <p className="mt-4 text-base font-semibold text-zinc-600 sm:text-xl">
                 {statement.subtitle}
               </p>
             )}
 
-            <div className="mt-10 space-y-5">
+            <div className="mt-9 space-y-4">
               {statement.body.map((block, index) => (
                 isBulletBlock(block) ? (
                   <ul
                     key={`${index}-${block.slice(0, 20)}`}
-                    className="space-y-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-5"
+                    className="space-y-2.5 rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4"
                   >
                     {block
                       .split('\n')
@@ -82,7 +82,7 @@ export default async function CoalitionStatementPage() {
                       .map((line) => (
                         <li
                           key={line}
-                          className="text-base leading-8 text-slate-700"
+                          className="text-sm leading-8 text-zinc-700 sm:text-base"
                         >
                           {line}
                         </li>
@@ -91,7 +91,7 @@ export default async function CoalitionStatementPage() {
                 ) : (
                   <p
                     key={`${index}-${block.slice(0, 20)}`}
-                    className="text-base leading-8 text-slate-700 sm:text-[1.05rem]"
+                    className="text-sm leading-8 text-zinc-700 sm:text-base"
                   >
                     {block}
                   </p>

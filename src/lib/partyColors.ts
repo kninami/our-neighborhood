@@ -9,14 +9,14 @@ type PartyTheme = {
 };
 
 const PARTY_COLORS: Record<string, PartyColor> = {
-  '녹색당': { bg: '#69BE83', text: '#fff', border: '#4da06a' },
-  '정의당': { bg: '#FEF339', text: '#1a1a1a', border: '#d4c700' },
-  '노동당': { bg: '#E85451', text: '#fff', border: '#c43b38' },
-  '기본소득당': { bg: '#69BE83', text: '#fff', border: '#4da06a' },
-  '사회변혁노동자당': { bg: '#E85451', text: '#fff', border: '#c43b38' },
-  '진보당': { bg: '#E85451', text: '#fff', border: '#c43b38' },
-  '미래당': { bg: '#FEF339', text: '#1a1a1a', border: '#d4c700' },
-  '사회당': { bg: '#E85451', text: '#fff', border: '#c43b38' },
+  '녹색당':           { bg: '#50B62A', text: '#fff',    border: '#3d9020' },
+  '정의당':           { bg: '#FFED00', text: '#1a1a1a', border: '#c9c200' },
+  '노동당':           { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
+  '기본소득당':       { bg: '#50B62A', text: '#fff',    border: '#3d9020' },
+  '사회변혁노동자당': { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
+  '진보당':           { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
+  '미래당':           { bg: '#FFED00', text: '#1a1a1a', border: '#c9c200' },
+  '사회당':           { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
 };
 
 const DEFAULT_COLOR: PartyColor = { bg: '#94a3b8', text: '#fff', border: '#64748b' };
@@ -31,28 +31,28 @@ const DEFAULT_THEME: PartyTheme = {
 
 const PARTY_THEMES: Record<string, PartyTheme> = {
   '정의당': {
-    pageBackground: 'linear-gradient(180deg,#fff9dd 0%,#ffffff 24%,#fffef4 100%)',
-    heroCardBackground: '#fffbea',
-    heroCardBorder: '#f4e67a',
-    accentSoft: '#fffde2',
-    sectionSoft: '#fffbef',
-    badgeSoft: '#fff6bf',
+    pageBackground: 'linear-gradient(180deg,#fffbe0 0%,#ffffff 24%,#fffef0 100%)',
+    heroCardBackground: '#fffbe0',
+    heroCardBorder: '#f0e000',
+    accentSoft: '#fffce8',
+    sectionSoft: '#fffdf0',
+    badgeSoft: '#fff8b0',
   },
   '녹색당': {
-    pageBackground: 'linear-gradient(180deg,#e8f7ee 0%,#ffffff 24%,#f5fcf7 100%)',
-    heroCardBackground: '#f2fbf5',
-    heroCardBorder: '#9bd4ad',
-    accentSoft: '#eefaf1',
-    sectionSoft: '#f4fcf6',
-    badgeSoft: '#dff3e6',
+    pageBackground: 'linear-gradient(180deg,#e6f7dc 0%,#ffffff 24%,#f2faea 100%)',
+    heroCardBackground: '#edf7e4',
+    heroCardBorder: '#8dd468',
+    accentSoft: '#e8f6de',
+    sectionSoft: '#f0f9e8',
+    badgeSoft: '#d4edbe',
   },
   '노동당': {
-    pageBackground: 'linear-gradient(180deg,#fff0ef 0%,#ffffff 24%,#fff7f6 100%)',
-    heroCardBackground: '#fff6f5',
-    heroCardBorder: '#f1a7a5',
-    accentSoft: '#fff4f3',
-    sectionSoft: '#fff8f7',
-    badgeSoft: '#ffe0df',
+    pageBackground: 'linear-gradient(180deg,#ffeeed 0%,#ffffff 24%,#fff6f5 100%)',
+    heroCardBackground: '#fff4f3',
+    heroCardBorder: '#f09a97',
+    accentSoft: '#fff2f1',
+    sectionSoft: '#fff7f6',
+    badgeSoft: '#ffd8d6',
   },
 };
 

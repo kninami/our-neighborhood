@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import CandidateDetailPanel from './CandidateDetailPanel';
 import CandidateShareButton from './CandidateShareButton';
 import KoreaMap from './KoreaMap';
@@ -79,6 +80,22 @@ export default function MapPage({
   const [zoom, setZoom] = useState(1);
   const [modalCandidate, setModalCandidate] = useState<Candidate | null>(initialCandidate);
 
+  // 검색 등으로 URL이 바뀌면 prop이 변경되므로 state를 동기화
+  useEffect(() => {
+    if (initialCandidateId) {
+      const found = candidates.find(c => c.id === initialCandidateId) ?? null;
+      if (found) {
+        setSelectedRegion(found.region || null);
+        setModalCandidate(found);
+      }
+    } else if (initialRegion) {
+      setSelectedRegion(initialRegion);
+      setModalCandidate(null);
+    }
+  // candidates 배열 참조 변화로 인한 불필요한 재실행 방지
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCandidateId, initialRegion]);
+
   const regionCounts = useMemo(() => {
     const counts: Record<string, number> = {};
 
@@ -135,8 +152,9 @@ export default function MapPage({
   return (
     <>
       <div className="flex min-h-screen flex-col lg:flex-row">
+        {/* 지도 패널 */}
         <div
-          className="shrink-0 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:w-2/5 lg:self-start"
+          className="shrink-0 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:w-[32%] lg:self-start"
           style={{ backgroundColor: '#CFE8FC' }}
         >
           <div className="relative mx-auto flex w-full max-w-[42rem] flex-col items-center">
@@ -147,12 +165,11 @@ export default function MapPage({
               zoom={zoom}
             />
 
-            <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1.5">
+            <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1">
               <button
                 onClick={() => setZoom((value) => Math.min(+(value + ZOOM_STEP).toFixed(2), MAX_ZOOM))}
                 disabled={zoom >= MAX_ZOOM}
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-bold shadow-md transition-colors disabled:opacity-30"
-                style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#475569' }}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-lg font-bold border border-zinc-200 transition-colors disabled:opacity-30 bg-white text-zinc-600 hover:bg-zinc-50"
                 aria-label="지도 확대"
               >
                 +
@@ -160,8 +177,7 @@ export default function MapPage({
               <button
                 onClick={() => setZoom((value) => Math.max(+(value - ZOOM_STEP).toFixed(2), MIN_ZOOM))}
                 disabled={zoom <= MIN_ZOOM}
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-bold shadow-md transition-colors disabled:opacity-30"
-                style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#475569' }}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-lg font-bold border border-zinc-200 transition-colors disabled:opacity-30 bg-white text-zinc-600 hover:bg-zinc-50"
                 aria-label="지도 축소"
               >
                 −
@@ -169,23 +185,25 @@ export default function MapPage({
             </div>
           </div>
 
-          <p className="mt-2 text-center text-xs" style={{ color: '#6899b8' }}>
+          <p className="mt-2 text-center text-xs text-zinc-400">
             지도에서 지역을 클릭하면 후보자 목록을 볼 수 있습니다
           </p>
         </div>
 
-        <div className="flex flex-col border-t border-slate-200 bg-white lg:w-3/5 lg:border-l lg:border-t-0">
-          <div className="flex shrink-0 border-b border-slate-200">
+        {/* 후보자 목록 패널 */}
+        <div className="flex flex-col border-t border-zinc-200 bg-white lg:w-[68%] lg:border-l lg:border-t-0">
+          {/* 탭 */}
+          <div className="flex shrink-0 border-b border-zinc-200">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex-1 py-3 text-sm font-semibold transition-colors"
-                style={{ color: activeTab === tab.id ? '#111111' : '#94a3b8' }}
+                style={{ color: activeTab === tab.id ? '#18181B' : '#A1A1AA' }}
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#111111]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#18181B]" />
                 )}
               </button>
             ))}
@@ -237,16 +255,16 @@ function ComingSoon({
 }) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 p-8 text-center lg:min-h-screen">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: '#f0f7ff' }}>
-        <svg className="h-6 w-6" style={{ color: '#6899b8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50">
+        <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
         </svg>
       </div>
       <div>
-        <p className="mb-1 text-base font-semibold text-slate-700">
+        <p className="mb-1 text-sm font-semibold text-zinc-700">
           {region ? `${region} ${label}` : label} 정보를 준비 중입니다
         </p>
-        <p className="text-sm text-slate-400">곧 업데이트될 예정입니다</p>
+        <p className="text-xs text-zinc-400">곧 업데이트될 예정입니다</p>
       </div>
     </div>
   );
@@ -255,16 +273,16 @@ function ComingSoon({
 function EmptyState({ totalCount }: { totalCount: number }) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center gap-6 p-8 text-center lg:min-h-screen">
-      <div className="flex gap-3">
-        <div className="h-16 w-6 rounded-full bg-[#E85451] opacity-80" />
-        <div className="h-16 w-6 rounded-full bg-[#FEF339] opacity-80" />
-        <div className="h-16 w-6 rounded-full bg-[#69BE83] opacity-80" />
+      <div className="flex items-center gap-2">
+        <div className="h-14 w-4 rounded-sm bg-[#E73A36]" />
+        <div className="h-14 w-4 rounded-sm bg-[#FFED00]" />
+        <div className="h-14 w-4 rounded-sm bg-[#50B62A]" />
       </div>
       <div>
-        <p className="mb-1 text-lg font-semibold text-slate-700">
+        <p className="mb-1 text-base font-bold text-zinc-800">
           지도에서 지역을 선택하세요
         </p>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-zinc-400">
           전국 후보자 {totalCount.toLocaleString()}명이 등록되어 있습니다
         </p>
       </div>
@@ -286,20 +304,20 @@ function CandidateList({
   return (
     <div className="p-5">
       <div className="mb-5">
-        <h2 className="text-xl font-bold text-slate-800">{region}</h2>
-        <p className="mt-0.5 text-sm text-slate-500">후보자 {total}명</p>
+        <h2 className="text-xl font-black tracking-tight text-zinc-900">{region}</h2>
+        <p className="mt-0.5 text-sm text-zinc-400">후보자 {total}명</p>
       </div>
 
       {grouped.length === 0 && (
-        <p className="text-sm text-slate-400">등록된 후보자가 없습니다.</p>
+        <p className="text-base text-zinc-400">등록된 후보자가 없습니다.</p>
       )}
 
       {grouped.map(([type, list]) => (
         <section key={type} className="mb-6">
-          <h3 className="mb-2 border-b border-slate-100 pb-1 text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <h3 className="mb-2 border-b border-zinc-100 pb-1.5 text-[0.78rem] font-bold uppercase tracking-widest text-zinc-400">
             {type}
           </h3>
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col">
             {list.map((candidate) => (
               <CandidateCard
                 key={candidate.id}
@@ -327,37 +345,69 @@ function CandidateCard({
     <li>
       <button
         onClick={onClick}
-        className="group flex w-full items-center gap-3 rounded-lg border border-slate-100 p-3 text-left transition-colors hover:border-slate-300 hover:bg-slate-50"
-        style={{ borderLeftColor: color.border, borderLeftWidth: 4 }}
+        className="group flex w-full items-stretch border border-zinc-100 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+        style={{ borderLeftColor: color.bg, borderLeftWidth: 5 }}
       >
-        <div className="min-w-0 flex-1">
+        {/* 후보자 사진: 카드 높이에 꽉 차게, 여백 없이 */}
+        <div className="relative w-16 shrink-0 overflow-hidden border-r border-zinc-100 bg-zinc-100">
+          {candidate.photoUrl ? (
+            <Image
+              src={candidate.photoUrl}
+              alt={candidate.name}
+              fill
+              className="object-cover object-top"
+              sizes="64px"
+              quality={30}
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <svg
+                className="h-7 w-7 text-zinc-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a8.25 8.25 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        {/* 텍스트 영역 */}
+        <div className="min-w-0 flex-1 px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-slate-800 group-hover:text-slate-900">
+            <span className="font-bold text-zinc-800 group-hover:text-zinc-900 text-base">
               {candidate.name}
             </span>
             <span
-              className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
+              className="shrink-0 rounded-md px-2 py-0.5 text-sm font-semibold"
               style={{ backgroundColor: color.bg, color: color.text }}
             >
               {candidate.party || '무소속'}
             </span>
           </div>
           {candidate.district && (
-            <p className="mt-0.5 truncate text-xs text-slate-400">
+            <p className="mt-0.5 truncate text-sm text-zinc-400">
               {candidate.district}
               {candidate.candidateType ? ` · ${candidate.candidateType}` : ''}
             </p>
           )}
         </div>
-        <svg
-          className="h-4 w-4 shrink-0 text-slate-300 group-hover:text-slate-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
+
+        {/* 화살표 */}
+        <div className="flex items-center pr-4">
+          <svg
+            className="h-4 w-4 shrink-0 text-zinc-300 group-hover:text-zinc-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
       </button>
     </li>
   );
@@ -406,11 +456,11 @@ function CandidateModal({
   return (
     <div
       className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5"
-      style={{ backgroundColor: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}
+      style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div
-        className="modal-card relative max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_100px_rgba(15,23,42,0.35)]"
+        className="modal-card relative max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-xl bg-white border border-zinc-200"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -425,16 +475,16 @@ function CandidateModal({
 
           <button
             onClick={onClose}
-            className="rounded-full bg-white/92 p-2 text-slate-500 shadow-sm transition-colors hover:text-slate-700"
+            className="rounded-lg bg-white border border-zinc-200 p-2 text-zinc-500 transition-colors hover:text-zinc-800 hover:border-zinc-300"
             aria-label="닫기"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="max-h-[92vh] overflow-y-auto p-3 sm:p-5">
+        <div className="max-h-[92vh] overflow-y-auto">
           <div id="candidate-modal-title" className="sr-only">
             {candidate.name} 후보 상세 정보
           </div>
