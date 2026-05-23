@@ -211,13 +211,16 @@ export default function MapPage({
 
           <div className="flex-1">
             {activeTab === 'candidates' && (
-              !selectedRegion ? (
-                <EmptyState totalCount={candidates.length} />
-              ) : (
+              selectedRegion ? (
                 <CandidateList
                   region={selectedRegion}
                   grouped={grouped}
                   total={regionCandidates.length}
+                  onSelect={handleCandidateSelect}
+                />
+              ) : (
+                <CandidateGrid
+                  candidates={candidates}
                   onSelect={handleCandidateSelect}
                 />
               )
@@ -270,22 +273,39 @@ function ComingSoon({
   );
 }
 
-function EmptyState({ totalCount }: { totalCount: number }) {
+function CandidateGrid({
+  candidates: allCandidates,
+  onSelect,
+}: {
+  candidates: Candidate[];
+  onSelect: (candidate: Candidate) => void;
+}) {
+  const grouped = useMemo(() => groupByType(allCandidates), [allCandidates]);
+
   return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center gap-6 p-8 text-center lg:min-h-screen">
-      <div className="flex items-center gap-2">
-        <div className="h-14 w-4 rounded-sm bg-[#E73A36]" />
-        <div className="h-14 w-4 rounded-sm bg-[#FFED00]" />
-        <div className="h-14 w-4 rounded-sm bg-[#50B62A]" />
+    <div className="p-5 sm:p-6">
+      <div className="mb-8">
+        <h2 className="text-4xl font-black tracking-tight text-zinc-900">전체 후보자</h2>
+        <p className="mt-1 text-base text-zinc-500">후보자 {allCandidates.length}명</p>
       </div>
-      <div>
-        <p className="mb-1 text-base font-bold text-zinc-800">
-          지도에서 지역을 선택하세요
-        </p>
-        <p className="text-sm text-zinc-400">
-          전국 후보자 {totalCount.toLocaleString()}명이 등록되어 있습니다
-        </p>
-      </div>
+
+      {grouped.map(([type, list]) => (
+        <section key={type} className="mb-10">
+          <div className="mb-4 flex items-baseline gap-3">
+            <h3 className="text-2xl font-black tracking-tight text-zinc-900">{type}</h3>
+            <span className="text-base font-semibold text-zinc-400">{list.length}명</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {list.map((candidate) => (
+              <CandidateCard
+                key={candidate.id}
+                candidate={candidate}
+                onClick={() => onSelect(candidate)}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
@@ -302,10 +322,10 @@ function CandidateList({
   onSelect: (candidate: Candidate) => void;
 }) {
   return (
-    <div className="p-5">
-      <div className="mb-5">
-        <h2 className="text-xl font-black tracking-tight text-zinc-900">{region}</h2>
-        <p className="mt-0.5 text-sm text-zinc-400">후보자 {total}명</p>
+    <div className="p-5 sm:p-6">
+      <div className="mb-8">
+        <h2 className="text-4xl font-black tracking-tight text-zinc-900">{region}</h2>
+        <p className="mt-1 text-base text-zinc-500">후보자 {total}명</p>
       </div>
 
       {grouped.length === 0 && (
@@ -313,11 +333,12 @@ function CandidateList({
       )}
 
       {grouped.map(([type, list]) => (
-        <section key={type} className="mb-6">
-          <h3 className="mb-2 border-b border-zinc-100 pb-1.5 text-[0.78rem] font-bold uppercase tracking-widest text-zinc-400">
-            {type}
-          </h3>
-          <ul className="flex flex-col">
+        <section key={type} className="mb-10">
+          <div className="mb-4 flex items-baseline gap-3">
+            <h3 className="text-2xl font-black tracking-tight text-zinc-900">{type}</h3>
+            <span className="text-base font-semibold text-zinc-400">{list.length}명</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {list.map((candidate) => (
               <CandidateCard
                 key={candidate.id}
@@ -325,7 +346,7 @@ function CandidateList({
                 onClick={() => onSelect(candidate)}
               />
             ))}
-          </ul>
+          </div>
         </section>
       ))}
     </div>
@@ -342,74 +363,56 @@ function CandidateCard({
   const color = getPartyColor(candidate.party);
 
   return (
-    <li>
-      <button
-        onClick={onClick}
-        className="group flex w-full items-stretch border border-zinc-100 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-        style={{ borderLeftColor: color.bg, borderLeftWidth: 5 }}
-      >
-        {/* 후보자 사진: 카드 높이에 꽉 차게, 여백 없이 */}
-        <div className="relative w-16 shrink-0 overflow-hidden border-r border-zinc-100 bg-zinc-100">
-          {candidate.photoUrl ? (
-            <Image
-              src={candidate.photoUrl}
-              alt={candidate.name}
-              fill
-              className="object-cover object-top"
-              sizes="64px"
-              quality={30}
-              loading="lazy"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <svg
-                className="h-7 w-7 text-zinc-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a8.25 8.25 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-            </div>
-          )}
-        </div>
+    <button
+      onClick={onClick}
+      className="group flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white text-left transition-all hover:border-zinc-300 hover:shadow-md"
+    >
+      {/* 당색 탑 스트립 */}
+      <div className="h-[5px] w-full shrink-0" style={{ backgroundColor: color.bg }} />
 
-        {/* 텍스트 영역 */}
-        <div className="min-w-0 flex-1 px-4 py-3.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-zinc-800 group-hover:text-zinc-900 text-base">
-              {candidate.name}
-            </span>
-            <span
-              className="shrink-0 rounded-md px-2 py-0.5 text-sm font-semibold"
-              style={{ backgroundColor: color.bg, color: color.text }}
+      {/* 사진 */}
+      <div className="relative w-full overflow-hidden bg-zinc-100" style={{ aspectRatio: '4/3' }}>
+        {candidate.photoUrl ? (
+          <Image
+            src={candidate.photoUrl}
+            alt={candidate.name}
+            fill
+            className="object-cover object-top"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            quality={40}
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <svg
+              className="h-10 w-10 text-zinc-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
             >
-              {candidate.party || '무소속'}
-            </span>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a8.25 8.25 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
           </div>
-          {candidate.district && (
-            <p className="mt-0.5 truncate text-sm text-zinc-400">
-              {candidate.district}
-              {candidate.candidateType ? ` · ${candidate.candidateType}` : ''}
-            </p>
-          )}
-        </div>
+        )}
+      </div>
 
-        {/* 화살표 */}
-        <div className="flex items-center pr-4">
-          <svg
-            className="h-4 w-4 shrink-0 text-zinc-300 group-hover:text-zinc-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </button>
-    </li>
+      {/* 정보 영역 */}
+      <div className="flex flex-1 flex-col px-4 py-4">
+        <span
+          className="mb-2 inline-block self-start rounded-md px-2.5 py-0.5 text-sm font-bold"
+          style={{ backgroundColor: color.bg, color: color.text }}
+        >
+          {candidate.party || '무소속'}
+        </span>
+        <p className="text-2xl font-black leading-snug text-zinc-900">{candidate.name}</p>
+        {(candidate.district || candidate.region) && (
+          <p className="mt-1.5 text-sm leading-snug text-zinc-500">
+            {candidate.district || candidate.region}
+          </p>
+        )}
+      </div>
+    </button>
   );
 }
 
