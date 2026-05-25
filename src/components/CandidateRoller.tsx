@@ -94,7 +94,7 @@ export default function CandidateRoller({ candidates }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2.5 justify-end">
+    <div className="flex items-center gap-2.5 justify-center md:justify-end">
       {/* 신호등: 모바일에서 숨김 */}
       <div className="hidden md:flex items-center gap-1.5 shrink-0">
         {LIGHTS.map(({ color, glow, delay }) => (
@@ -148,7 +148,7 @@ function CandidateItem({
 }) {
   return (
     <span
-      className={`${animClass} absolute inset-0 flex items-center gap-[0.3em]`}
+      className={`${animClass} absolute inset-0 flex items-center justify-center gap-[0.3em] md:justify-start`}
       style={{ fontSize: '0.9rem', color: '#1e293b', whiteSpace: 'nowrap' }}
     >
       <span style={{ fontWeight: 700 }}>{getShortLocation(candidate)}</span>

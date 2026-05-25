@@ -57,7 +57,7 @@ export default function IntroSplash() {
       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[linear-gradient(180deg,#E73A36_0%,#FFED00_50%,#50B62A_100%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl items-center px-8 py-14 sm:px-12">
-        <div className={`grid w-full gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center ${popped ? 'intro-frame-in' : 'opacity-0'}`}>
+        <div className={`grid w-full gap-6 lg:gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center ${popped ? 'intro-frame-in' : 'opacity-0'}`}>
 
           {/* 텍스트 영역 */}
           <div className="order-2 lg:order-1">
@@ -123,7 +123,7 @@ export default function IntroSplash() {
           {/* 신호등 일러스트 */}
           <div className={`order-1 lg:order-2 ${popped ? 'intro-pop' : 'opacity-0'}`}>
             <div className="relative mx-auto w-full max-w-[22rem]">
-              <div className="intro-signal-float relative mx-auto w-[13rem] sm:w-[15rem]">
+              <div className="intro-signal-float relative mx-auto w-[9rem] sm:w-[15rem]">
                 {/* 기둥 */}
                 <div
                   className="absolute left-1/2 top-[-3rem] h-12 w-4 -translate-x-1/2"
@@ -149,10 +149,8 @@ export default function IntroSplash() {
                         style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
                       >
                         <div
-                          className="intro-light-pulse relative mx-auto rounded-lg"
+                          className="intro-light-pulse relative mx-auto rounded-lg w-[56px] h-[56px] sm:w-[88px] sm:h-[88px]"
                           style={{
-                            width: 88,
-                            height: 88,
                             backgroundColor: color,
                             animationDelay: delay,
                           }}
