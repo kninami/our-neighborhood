@@ -1,22 +1,19 @@
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { getPartyColor, getPartyTheme } from '@/lib/partyColors';
-import type { Candidate, RegionalAgenda } from '@/types';
+import type { Candidate } from '@/types';
 
 type Props = {
   candidate: Candidate;
-  agendas: RegionalAgenda[];
   compact?: boolean;
 };
 
 export default function CandidateDetailPanel({
   candidate,
-  agendas,
   compact = false,
 }: Props) {
   const color = getPartyColor(candidate.party);
   const theme = getPartyTheme(candidate.party);
-  const relatedAgendas = agendas.filter((agenda) => agenda.region === candidate.region);
   const links = [
     { label: '홈페이지', url: candidate.websiteUrl, tone: '#E73A36' },
     { label: '페이스북', url: candidate.facebookUrl, tone: '#FFED00' },
@@ -162,11 +159,6 @@ export default function CandidateDetailPanel({
             )}
           </SectionCard>
 
-          {relatedAgendas.length > 0 && (
-            <SectionCard title="지역 현안과 의제" tone="#FFED00">
-              <AgendaList agendas={relatedAgendas} theme={theme} />
-            </SectionCard>
-          )}
         </div>
       </div>
     </div>
@@ -264,48 +256,6 @@ function InfoCard({
   );
 }
 
-
-function AgendaList({
-  agendas,
-  theme,
-}: {
-  agendas: RegionalAgenda[];
-  theme: ReturnType<typeof getPartyTheme>;
-}) {
-  return (
-    <ul className="grid gap-2">
-      {agendas.map((agenda, index) => (
-        <li
-          key={`${agenda.title}-${agenda.category}-${index}`}
-          className="rounded-lg border border-zinc-200 px-4 py-3.5"
-          style={{ backgroundColor: theme.sectionSoft }}
-        >
-          <div className="flex flex-wrap items-center gap-1.5">
-            {agenda.category && (
-              <span className="rounded-md px-2 py-0.5 text-sm font-semibold text-zinc-700" style={{ backgroundColor: theme.accentSoft }}>
-                {agenda.category}
-              </span>
-            )}
-            {agenda.localArea && (
-              <span className="rounded-md px-2 py-0.5 text-sm font-semibold text-zinc-700" style={{ backgroundColor: theme.badgeSoft }}>
-                {agenda.localArea}
-              </span>
-            )}
-          </div>
-          <p className="mt-2 text-base font-bold text-zinc-900">{agenda.title || '제목 미정'}</p>
-          {agenda.content && (
-            <p className="mt-1.5 text-base leading-8 text-zinc-600">{agenda.content}</p>
-          )}
-          {agenda.relatedPolicy && (
-            <p className="mt-2 text-sm font-medium text-zinc-400">
-              관련 정책: {agenda.relatedPolicy}
-            </p>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 function EmptySection({
   message,

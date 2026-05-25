@@ -39,6 +39,14 @@ const MENU_ITEMS: MenuItem[] = [
     label: '사회대전환 연대회의 소개',
     children: [
       {
+        label: '소개',
+        href: '/coalition/about',
+      },
+      {
+        label: '10대 공통 공약',
+        href: '/coalition/pledges',
+      },
+      {
         label: '공동선언문',
         href: '/coalition/statement',
       },

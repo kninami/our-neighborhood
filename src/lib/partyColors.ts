@@ -17,6 +17,7 @@ const PARTY_COLORS: Record<string, PartyColor> = {
   '진보당':           { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
   '미래당':           { bg: '#FFED00', text: '#1a1a1a', border: '#c9c200' },
   '사회당':           { bg: '#E73A36', text: '#fff',    border: '#b82e2b' },
+  '탈시설장애인당':   { bg: '#F9602B', text: '#fff',    border: '#d44a1f' },
 };
 
 const DEFAULT_COLOR: PartyColor = { bg: '#94a3b8', text: '#fff', border: '#64748b' };
@@ -53,6 +54,14 @@ const PARTY_THEMES: Record<string, PartyTheme> = {
     accentSoft: '#fff2f1',
     sectionSoft: '#fff7f6',
     badgeSoft: '#ffd8d6',
+  },
+  '탈시설장애인당': {
+    pageBackground: 'linear-gradient(180deg,#fff0ea 0%,#ffffff 24%,#fff5f0 100%)',
+    heroCardBackground: '#fff3ed',
+    heroCardBorder: '#f9a882',
+    accentSoft: '#fff1eb',
+    sectionSoft: '#fff6f2',
+    badgeSoft: '#fdd5c0',
   },
 };
 

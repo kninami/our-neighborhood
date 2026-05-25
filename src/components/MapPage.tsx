@@ -154,7 +154,7 @@ export default function MapPage({
       <div className="flex min-h-screen flex-col lg:flex-row">
         {/* 지도 패널 */}
         <div
-          className="shrink-0 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:w-[32%] lg:self-start"
+          className="shrink-0 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:w-[38%] lg:self-start"
           style={{ backgroundColor: '#CFE8FC' }}
         >
           <div className="relative mx-auto flex w-full max-w-[42rem] flex-col items-center">
@@ -191,7 +191,7 @@ export default function MapPage({
         </div>
 
         {/* 후보자 목록 패널 */}
-        <div className="flex flex-col border-t border-zinc-200 bg-white lg:w-[68%] lg:border-l lg:border-t-0">
+        <div className="flex flex-col border-t border-zinc-200 bg-white lg:w-[62%] lg:border-l lg:border-t-0">
           {/* 탭 */}
           <div className="flex shrink-0 border-b border-zinc-200">
             {TABS.map((tab) => (
@@ -231,7 +231,7 @@ export default function MapPage({
             )}
 
             {activeTab === 'agenda' && (
-              <ComingSoon label="현안과 의제" region={selectedRegion} />
+              <AgendaTab agendas={agendas} region={selectedRegion} />
             )}
           </div>
         </div>
@@ -241,7 +241,6 @@ export default function MapPage({
         <CandidateModal
           candidate={modalCandidate}
           policies={policies}
-          agendas={agendas}
           onClose={() => setModalCandidate(null)}
         />
       )}
@@ -269,6 +268,132 @@ function ComingSoon({
         </p>
         <p className="text-xs text-zinc-400">곧 업데이트될 예정입니다</p>
       </div>
+    </div>
+  );
+}
+
+const AGENDA_PALETTE = [
+  '#E73A36',
+  '#3B82F6',
+  '#50B62A',
+  '#F9602B',
+  '#8B5CF6',
+  '#F59E0B',
+  '#10B981',
+  '#EC4899',
+];
+
+function buildCategoryColorMap(agendas: RegionalAgenda[]): Map<string, string> {
+  const map = new Map<string, string>();
+  let i = 0;
+  for (const a of agendas) {
+    if (a.category && !map.has(a.category)) {
+      map.set(a.category, AGENDA_PALETTE[i % AGENDA_PALETTE.length]);
+      i++;
+    }
+  }
+  return map;
+}
+
+function AgendaTab({
+  agendas,
+  region,
+}: {
+  agendas: RegionalAgenda[];
+  region: string | null;
+}) {
+  const filtered = region
+    ? agendas.filter((a) => a.region === region)
+    : agendas;
+
+  const colorMap = buildCategoryColorMap(filtered);
+
+  if (filtered.length === 0) {
+    return (
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 p-8 text-center lg:min-h-screen">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50">
+          <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <div>
+          <p className="mb-1 text-sm font-semibold text-zinc-700">
+            {region ? `${region} 현안과 의제` : '현안과 의제'} 정보가 없습니다
+          </p>
+          <p className="text-xs text-zinc-400">지도에서 지역을 선택하면 해당 지역 의제를 볼 수 있습니다</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5 sm:p-6">
+      <div className="mb-8">
+        <h2 className="text-4xl font-black tracking-tight text-zinc-900">
+          {region ? `${region} 현안과 의제` : '현안과 의제'}
+        </h2>
+        <p className="mt-1 text-base text-zinc-500">{filtered.length}개 의제</p>
+      </div>
+      <ul className="grid gap-3">
+        {filtered.map((agenda, index) => {
+          const color = colorMap.get(agenda.category) ?? '#94a3b8';
+          return (
+            <li
+              key={`${agenda.title}-${agenda.category}-${index}`}
+              className="overflow-hidden rounded-xl border border-zinc-200 bg-white"
+            >
+              <div className="px-4 py-4">
+                <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                  {agenda.region && !region && (
+                    <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-sm font-semibold text-zinc-600">
+                      {agenda.region}
+                    </span>
+                  )}
+                  {agenda.category && (
+                    <span
+                      className="rounded-md px-2 py-0.5 text-sm font-semibold"
+                      style={{ backgroundColor: `${color}18`, color }}
+                    >
+                      {agenda.category}
+                    </span>
+                  )}
+                  {agenda.localArea && (
+                    <span className="rounded-md bg-zinc-50 px-2 py-0.5 text-sm font-medium text-zinc-500">
+                      {agenda.localArea}
+                    </span>
+                  )}
+                </div>
+                <p className="text-lg font-bold text-zinc-900 sm:text-xl">{agenda.title || '제목 미정'}</p>
+                {agenda.content && (
+                  <ul className="mt-1.5 space-y-1">
+                    {agenda.content.split('-').map((s) => s.trim()).filter(Boolean).map((line, i) => (
+                      <li key={i} className="flex gap-2 text-base leading-7 text-zinc-600">
+                        <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {agenda.relatedPolicy && (
+                  <div className="mt-3">
+                    <div className="rounded-lg bg-zinc-50 px-3 py-2.5">
+                      <p className="mb-2 text-sm font-bold text-zinc-700">관련 정책</p>
+                      <ul className="space-y-1">
+                        {agenda.relatedPolicy.split('-').map((s) => s.trim()).filter(Boolean).map((line, i) => (
+                          <li key={i} className="flex gap-2 text-base leading-7 text-zinc-700">
+                            <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400" />
+                            {line}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -419,12 +544,10 @@ function CandidateCard({
 function CandidateModal({
   candidate,
   policies,
-  agendas,
   onClose,
 }: {
   candidate: Candidate;
   policies: CandidatePolicy[];
-  agendas: RegionalAgenda[];
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -493,7 +616,6 @@ function CandidateModal({
           </div>
           <CandidateDetailPanel
             candidate={candidate}
-            agendas={agendas}
             compact
           />
         </div>

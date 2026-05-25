@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import CandidateDetailPanel from '@/components/CandidateDetailPanel';
-import { getAgendas, getCandidateById, getPolicies } from '@/lib/sheets';
+import { getCandidateById, getPolicies } from '@/lib/sheets';
 
 export default async function CandidatePage({
   params,
@@ -11,10 +11,9 @@ export default async function CandidatePage({
 }) {
   const { id } = await params;
   const { region } = await searchParams;
-  const [candidate, policies, agendas] = await Promise.all([
+  const [candidate, policies] = await Promise.all([
     getCandidateById(id),
     getPolicies(),
-    getAgendas(),
   ]);
 
   if (!candidate) {
@@ -53,7 +52,6 @@ export default async function CandidatePage({
 
       <CandidateDetailPanel
         candidate={candidate}
-        agendas={agendas}
       />
     </div>
   );

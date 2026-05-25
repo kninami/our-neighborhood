@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Candidate } from '@/types';
-import { getPartyColor } from '@/lib/partyColors';
 
 const REGION_SHORT: Record<string, string> = {
   서울특별시: '서울', 부산광역시: '부산', 대구광역시: '대구',
@@ -147,27 +146,14 @@ function CandidateItem({
   candidate: Candidate;
   animClass: string;
 }) {
-  const color = getPartyColor(candidate.party);
   return (
     <span
-      className={`${animClass} absolute inset-0 flex items-center gap-2`}
+      className={`${animClass} absolute inset-0 flex items-center gap-[0.3em]`}
       style={{ fontSize: '0.9rem', color: '#1e293b', whiteSpace: 'nowrap' }}
     >
-      {/* 당색 동그라미 (사진 대용) */}
-      <span
-        className="shrink-0 rounded-full"
-        style={{
-          width: 14, height: 14,
-          backgroundColor: color.bg,
-          border: `1.5px solid ${color.border}`,
-        }}
-      />
-      <span>
-        <span style={{ fontWeight: 700 }}>{getShortLocation(candidate)}</span>
-        {' '}
-        <span style={{ fontWeight: 900 }}>{candidate.name}</span>
-        {' '}밀어주기
-      </span>
+      <span style={{ fontWeight: 700 }}>{getShortLocation(candidate)}</span>
+      <span style={{ fontWeight: 900 }}>{candidate.name}</span>
+      <span>밀어주기</span>
     </span>
   );
 }
