@@ -206,9 +206,6 @@ function PhotoCard({
               </svg>
             </div>
             <p className="text-xs font-semibold text-zinc-600">사진 준비 중</p>
-            <p className="mt-1 text-[0.65rem] leading-5 text-zinc-400">
-              시트에 사진 URL을 추가하면 여기에 표시됩니다.
-            </p>
           </div>
         )}
       </div>
