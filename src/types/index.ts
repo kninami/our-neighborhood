@@ -16,10 +16,9 @@ export type Candidate = {
   photoUrl: string;
 };
 
-export type CandidatePolicy = {
-  region: string;
-  localArea: string;
-  candidateName: string;
+export type Policy = {
+  party: string;
+  area: string;
   title: string;
   content: string;
 };

@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import type { Candidate, CandidatePolicy, RegionalAgenda } from '@/types';
+import type { Candidate, Policy, RegionalAgenda } from '@/types';
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID ?? '185gMY199wwD1tVWbBgsh9M1215JRaDu9PZNlgVR3Ipg';
 const GVIZ_BASE_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq`;
@@ -167,20 +167,19 @@ export const getCandidateById = cache(async function getCandidateById(id: string
   return candidates.find((candidate) => candidate.id === id) ?? null;
 });
 
-export const getPolicies = cache(async function getPolicies(): Promise<CandidatePolicy[]> {
+export const getPolicies = cache(async function getPolicies(): Promise<Policy[]> {
   try {
-    const rows = await fetchSheetRows('정책', 'A:E');
+    const rows = await fetchSheetRows('정책', 'A:D');
     const [, ...policyRows] = rows;
 
     return policyRows
       .map((row) => ({
-        region: normalizeRegion(row[0] ?? ''),
-        localArea: row[1] ?? '',
-        candidateName: row[2] ?? '',
-        title: row[3] ?? '',
-        content: row[4] ?? '',
+        party: row[0] ?? '',
+        area: row[1] ?? '',
+        title: row[2] ?? '',
+        content: row[3] ?? '',
       }))
-      .filter((policy) => policy.title || policy.content || policy.candidateName);
+      .filter((policy) => policy.title || policy.content);
   } catch {
     return [];
   }

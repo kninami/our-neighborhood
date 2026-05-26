@@ -6,7 +6,7 @@ import CandidateDetailPanel from './CandidateDetailPanel';
 import CandidateShareButton from './CandidateShareButton';
 import KoreaMap from './KoreaMap';
 import { getPartyColor } from '@/lib/partyColors';
-import type { Candidate, CandidatePolicy, RegionalAgenda } from '@/types';
+import type { Candidate, Policy, RegionalAgenda } from '@/types';
 
 const TYPE_PRIORITY: Record<string, number> = {
   '서울시장': 0,
@@ -28,7 +28,7 @@ type Tab = 'candidates' | 'policy' | 'agenda';
 
 type Props = {
   candidates: Candidate[];
-  policies: CandidatePolicy[];
+  policies: Policy[];
   agendas: RegionalAgenda[];
   initialRegion?: string | null;
   initialCandidateId?: string | null;
@@ -217,6 +217,7 @@ export default function MapPage({
                   grouped={grouped}
                   total={regionCandidates.length}
                   onSelect={handleCandidateSelect}
+                  onReset={() => setSelectedRegion(null)}
                 />
               ) : (
                 <CandidateGrid
@@ -227,7 +228,7 @@ export default function MapPage({
             )}
 
             {activeTab === 'policy' && (
-              <ComingSoon label="정책" region={selectedRegion} />
+              <PolicyTab policies={policies} />
             )}
 
             {activeTab === 'agenda' && (
@@ -240,7 +241,6 @@ export default function MapPage({
       {modalCandidate && (
         <CandidateModal
           candidate={modalCandidate}
-          policies={policies}
           onClose={() => setModalCandidate(null)}
         />
       )}
@@ -248,26 +248,175 @@ export default function MapPage({
   );
 }
 
-function ComingSoon({
-  label,
-  region,
-}: {
-  label: string;
-  region: string | null;
-}) {
+function PolicyTab({ policies }: { policies: Policy[] }) {
+  const [selectedParty, setSelectedParty] = useState<string | null>(null);
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
+
+  const parties = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const p of policies) {
+      if (p.party && !seen.has(p.party)) {
+        seen.add(p.party);
+        result.push(p.party);
+      }
+    }
+    return result;
+  }, [policies]);
+
+  const areas = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const p of policies) {
+      if (p.area && !seen.has(p.area)) {
+        seen.add(p.area);
+        result.push(p.area);
+      }
+    }
+    return result;
+  }, [policies]);
+
+  const filtered = policies.filter(
+    (p) =>
+      (selectedParty === null || p.party === selectedParty) &&
+      (selectedArea === null || p.area === selectedArea),
+  );
+
+  if (policies.length === 0) {
+    return (
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 p-8 text-center lg:min-h-screen">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50">
+          <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <div>
+          <p className="mb-1 text-sm font-semibold text-zinc-700">정책 정보가 없습니다</p>
+          <p className="text-xs text-zinc-400">곧 업데이트될 예정입니다</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 p-8 text-center lg:min-h-screen">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50">
-        <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
-        </svg>
+    <div className="p-5 sm:p-6">
+      <div className="mb-5">
+        <h2 className="text-4xl font-black tracking-tight text-zinc-900">정책</h2>
+        <p className="mt-1 text-base text-zinc-500">{filtered.length}개 정책</p>
       </div>
-      <div>
-        <p className="mb-1 text-sm font-semibold text-zinc-700">
-          {region ? `${region} ${label}` : label} 정보를 준비 중입니다
-        </p>
-        <p className="text-xs text-zinc-400">곧 업데이트될 예정입니다</p>
+
+      {/* 정당 필터 */}
+      <div className="mb-3">
+      <p className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-400">제안 정당</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setSelectedParty(null)}
+          className="rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+          style={
+            selectedParty === null
+              ? { backgroundColor: '#18181B', color: '#fff' }
+              : { backgroundColor: '#f4f4f5', color: '#52525b' }
+          }
+        >
+          전체
+        </button>
+        {parties.map((party) => {
+          const c = getPartyColor(party);
+          const isSelected = selectedParty === party;
+          return (
+            <button
+              key={party}
+              onClick={() => setSelectedParty(isSelected ? null : party)}
+              className="rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+              style={
+                isSelected
+                  ? { backgroundColor: c.bg, color: c.text }
+                  : { backgroundColor: '#f4f4f5', color: '#52525b' }
+              }
+            >
+              {party}
+            </button>
+          );
+        })}
       </div>
+      </div>
+
+      {/* 분야 필터 */}
+      <div className="mb-6">
+      <p className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-400">정책 분야</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setSelectedArea(null)}
+          className="rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+          style={
+            selectedArea === null
+              ? { backgroundColor: '#18181B', color: '#fff' }
+              : { backgroundColor: '#f4f4f5', color: '#52525b' }
+          }
+        >
+          전체
+        </button>
+        {areas.map((area) => (
+          <button
+            key={area}
+            onClick={() => setSelectedArea(selectedArea === area ? null : area)}
+            className="rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+            style={
+              selectedArea === area
+                ? { backgroundColor: '#18181B', color: '#fff' }
+                : { backgroundColor: '#f4f4f5', color: '#52525b' }
+            }
+          >
+            {area}
+          </button>
+        ))}
+      </div>
+      </div>
+
+      <ul className="grid gap-3">
+        {filtered.map((policy, index) => {
+          const color = getPartyColor(policy.party);
+          return (
+            <li
+              key={`${policy.title}-${index}`}
+              className="overflow-hidden rounded-xl border border-zinc-200 bg-white"
+            >
+              <div className="px-4 py-4">
+                <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                  {policy.party && (
+                    <span
+                      className="rounded-md px-2 py-0.5 text-sm font-semibold"
+                      style={{ backgroundColor: color.bg, color: color.text }}
+                    >
+                      {policy.party}
+                    </span>
+                  )}
+                  {policy.area && (
+                    <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-sm font-semibold text-zinc-600">
+                      {policy.area}
+                    </span>
+                  )}
+                </div>
+                <p className="text-lg font-bold text-zinc-900 sm:text-xl">{policy.title || '제목 미정'}</p>
+                {policy.content && (
+                  <ul className="mt-1.5 space-y-1">
+                    {policy.content
+                      .split(/[-△]/)
+                      .map((s) => s.trim())
+                      .filter(Boolean)
+                      .map((line, i) => (
+                        <li key={i} className="flex gap-2 text-base leading-7 text-zinc-600">
+                          <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
+                          {line}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -366,7 +515,7 @@ function AgendaTab({
                 <p className="text-lg font-bold text-zinc-900 sm:text-xl">{agenda.title || '제목 미정'}</p>
                 {agenda.content && (
                   <ul className="mt-1.5 space-y-1">
-                    {agenda.content.split('-').map((s) => s.trim()).filter(Boolean).map((line, i) => (
+                    {agenda.content.split(/[-△]/).map((s) => s.trim()).filter(Boolean).map((line, i) => (
                       <li key={i} className="flex gap-2 text-base leading-7 text-zinc-600">
                         <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
                         {line}
@@ -379,7 +528,7 @@ function AgendaTab({
                     <div className="rounded-lg bg-zinc-50 px-3 py-2.5">
                       <p className="mb-2 text-sm font-bold text-zinc-700">관련 정책</p>
                       <ul className="space-y-1">
-                        {agenda.relatedPolicy.split('-').map((s) => s.trim()).filter(Boolean).map((line, i) => (
+                        {agenda.relatedPolicy.split(/[-△]/).map((s) => s.trim()).filter(Boolean).map((line, i) => (
                           <li key={i} className="flex gap-2 text-base leading-7 text-zinc-700">
                             <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400" />
                             {line}
@@ -440,16 +589,30 @@ function CandidateList({
   grouped,
   total,
   onSelect,
+  onReset,
 }: {
   region: string;
   grouped: [string, Candidate[]][];
   total: number;
   onSelect: (candidate: Candidate) => void;
+  onReset: () => void;
 }) {
   return (
     <div className="p-5 sm:p-6">
       <div className="mb-8">
-        <h2 className="text-4xl font-black tracking-tight text-zinc-900">{region}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-4xl font-black tracking-tight text-zinc-900">{region}</h2>
+          <button
+            onClick={onReset}
+            className="flex items-center justify-center rounded-lg border border-zinc-200 p-1.5 text-zinc-400 transition-colors hover:border-zinc-300 hover:text-zinc-700"
+            aria-label="전체 후보자 보기"
+            title="전체 후보자 보기"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+            </svg>
+          </button>
+        </div>
         <p className="mt-1 text-base text-zinc-500">후보자 {total}명</p>
       </div>
 
@@ -543,11 +706,9 @@ function CandidateCard({
 
 function CandidateModal({
   candidate,
-  policies,
   onClose,
 }: {
   candidate: Candidate;
-  policies: CandidatePolicy[];
   onClose: () => void;
 }) {
   useEffect(() => {
