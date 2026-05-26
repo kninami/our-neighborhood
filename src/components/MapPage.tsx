@@ -73,9 +73,9 @@ function groupByType(candidates: Candidate[]): [string, Candidate[]][] {
     map.set(key, list);
   }
 
-  return [...map.entries()].sort(
-    ([a], [b]) => getTypePriority(a) - getTypePriority(b),
-  );
+  return [...map.entries()]
+    .sort(([a], [b]) => getTypePriority(a) - getTypePriority(b))
+    .map(([type, list]) => [type, list.sort((a, b) => a.name.localeCompare(b.name, 'ko'))] as [string, Candidate[]]);
 }
 
 export default function MapPage({
