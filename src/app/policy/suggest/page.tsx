@@ -85,7 +85,7 @@ export default function PolicySuggestPage() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-zinc-400">Policy Proposal</p>
             <h1 className="mt-3 text-2xl font-black tracking-tight text-zinc-900 sm:text-4xl">정책 제안하기</h1>
             <p className="mt-3 text-sm leading-7 text-zinc-500">
-              신호등연대가 담아야 할 정책을 제안해 주세요. 여러분의 아이디어가 2026 지방선거 공약이 됩니다.
+              신호등연대가 담아야 할 정책을 제안해 주세요. 여러분의 아이디어가 우리 동네를 바꾸는 힘이 됩니다.
             </p>
           </div>
 
