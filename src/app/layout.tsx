@@ -6,6 +6,7 @@ import SearchBar from '@/components/SearchBar';
 import CandidateRoller from '@/components/CandidateRoller';
 import HamburgerMenu from '@/components/HamburgerMenu';
 import Footer from '@/components/Footer';
+import VercelAnalytics from '@/components/VercelAnalytics';
 import { getCandidates } from '@/lib/sheets';
 
 const gothicA1 = Gothic_A1({
@@ -69,6 +70,7 @@ export default async function RootLayout({
         </header>
         <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
+        <VercelAnalytics />
       </body>
     </html>
   );

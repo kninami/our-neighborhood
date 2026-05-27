@@ -41,12 +41,12 @@ function normalizePhotoUrl(value: string): string {
 
   const driveFileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
   if (driveFileMatch) {
-    return `https://drive.google.com/thumbnail?id=${driveFileMatch[1]}&sz=w1200`;
+    return `https://drive.google.com/thumbnail?id=${driveFileMatch[1]}&sz=w800`;
   }
 
   const driveIdMatch = url.match(/[?&]id=([^&]+)/);
   if (url.includes('drive.google.com') && driveIdMatch) {
-    return `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}&sz=w1200`;
+    return `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}&sz=w800`;
   }
 
   return url;
