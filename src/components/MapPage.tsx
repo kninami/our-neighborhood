@@ -683,7 +683,7 @@ function CandidateCard({
             className="object-cover object-top"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             loading="lazy"
-            quality={40}
+            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
